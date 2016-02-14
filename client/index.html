@@ -4,20 +4,23 @@
     <title>Zen Tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table.css">
+
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
-    <script src="/js/main.js"></script>
+    <script src="/js/main.js"></script
   </head>
   
   
   <body ng-cloak ng-app="tracker">
     <div layout-fill layout="column"  ng-controller="main">
-       <div flex="80" layout="row" layout-align="center center" class="topAnimatedArea" >
+       <div flex="80" layout="column" layout-align="center center" class="topAnimatedArea" >
            <div class="animate-hide" ng-hide="hideForm">
                 <div class="bgCircle" ></div>
                <form ng-submit="setUsername()">
@@ -27,6 +30,44 @@
                 </md-input-container>
                 </form>
            </div>
+            <div class="animate-show" ng-show="hideForm">
+               Hello {{user.username}} !
+               <form>
+                   <md-input-container>
+					<md-select ng-model='package.carrier' placeholder="Carrier">
+						<md-option ng-value="carrier" ng-repeat="carrier in carriers">{{ carrier }}</md-option>
+					</md-select>
+				</md-input-container>
+                 <md-input-container >
+                  <label>Tracking Number</label>
+                  <input autocomplete="off" ng-model="package.id" type="text">
+                </md-input-container>
+                <md-button  ng-click="addPackage()" class="md-fab" aria-label="Eat cake">
+                    <i class="fa fa-plus"></i>
+                </md-button>
+                </form>
+                <div class="table-responsive-vertical shadow-z-1">
+                  <!-- Table starts here -->
+                  <table id="table" class="table table-hover table-mc-light-blue">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Carrier Name</th>
+                          <th>Tracking Number</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr data-ng-repeat="packageData in packagesData" ng-click="showPackageDetials(packageData, $event)">
+                          <td data-title="ID">{{$index + 1}}</td>
+                          <td data-title="Name">{{packageData.carrier}}</td>
+                          <td data-title="Number">{{packageData.tracking_number}}</td>
+                          <td data-title="Status">{{packageData.tracking_status.status}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+            </div>    
       </div>
        <div flex="20" id="animate-area">
         </div> 

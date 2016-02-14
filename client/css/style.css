@@ -63,3 +63,6 @@
 .animate-hide.ng-hide {
   opacity: 0;
 }
+.md-errors-spacer{
+    display: none;
+}
