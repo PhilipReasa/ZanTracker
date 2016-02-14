@@ -32,20 +32,6 @@
            </div>
             <div class="animate-show" ng-show="hideForm">
                Hello {{user.username}} !
-               <form>
-                   <md-input-container>
-					<md-select ng-model='package.carrier' placeholder="Carrier">
-						<md-option ng-value="carrier" ng-repeat="carrier in carriers">{{ carrier }}</md-option>
-					</md-select>
-				</md-input-container>
-                 <md-input-container >
-                  <label>Tracking Number</label>
-                  <input autocomplete="off" ng-model="package.id" type="text">
-                </md-input-container>
-                <md-button  ng-click="addPackage()" class="md-fab" aria-label="Eat cake">
-                    <i class="fa fa-plus"></i>
-                </md-button>
-                </form>
                 <div class="table-responsive-vertical shadow-z-1">
                   <!-- Table starts here -->
                   <table id="table" class="table table-hover table-mc-light-blue">
@@ -67,7 +53,24 @@
                       </tbody>
                     </table>
                   </div>
-            </div>    
+                  
+                  <form>
+                   <md-input-container class="h36p">
+          					<md-select ng-model='package.carrier' placeholder="Carrier">
+          						<md-option ng-value="carrier.id" ng-repeat="carrier in carriers">{{ carrier.name }}</md-option>
+          					</md-select>
+          				</md-input-container>
+                 <md-input-container class="h36 hax">
+                  <label>Tracking Number</label>
+                  <input autocomplete="off" ng-model="package.id" type="text">
+                </md-input-container>
+                <md-button  ng-click="addPackage()" class="md-fab" aria-label="Eat cake">
+                    <i class="fa fa-plus"></i>
+                </md-button>
+                </form>
+            </div>
+            
+            
       </div>
        <div flex="20" id="animate-area">
         </div> 

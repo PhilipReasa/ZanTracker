@@ -1,0 +1,21 @@
+<md-dialog aria-label="Mango (Fruit)"  ng-cloak>
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Details of your package</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <h2>{{packageData.tracking_number}}</h2>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button ng-click="answer('useful')" style="margin-right:20px;">
+        Ok Got It !
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

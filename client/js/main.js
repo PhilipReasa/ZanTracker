@@ -1,11 +1,21 @@
 angular.module("tracker", ['ngMaterial'])
 
-.controller("main", ["$scope", "AddUser", "AddPackage", "GetHippoPackages", function($scope, AddUser, AddPackage, GetHippoPackages) {
+.controller("main", ["$scope", "$mdDialog", "$mdMedia", "AddUser", "AddPackage", "GetHippoPackages", function($scope, $mdDialog, $mdMedia, AddUser, AddPackage, GetHippoPackages) {
     $scope.carriers = [
-        {usps: "USPS"}, 
-        {ups: "UPS"},
-        {dhl_express: "DHL Express"},
-        {fedex: "FEDEX"}
+        {id: "usps",
+         name: "USPS"}, 
+        {id:"ups",
+        name: "UPS"},
+        {id: "dhl_express",
+        name: "DHL Express"},
+        {id:"fedex",
+        name: "FEDEX"},
+        {id:"canada_post",
+        name: "Canada Post"},
+        {id: "lasership",
+        name: "Lasership"},
+        {id: "mondial_relay",
+        name: "Mondial Relay"}
     ];
     $scope.user = {};
     $scope.user.username = "";
@@ -39,25 +49,26 @@ angular.module("tracker", ['ngMaterial'])
     
     $scope.showPackageDetials = function (packageData, ev) {
         console.log(packageData);
-          var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && $scope.customFullscreen;
-    $mdDialog.show({
-      controller: DialogController,
-      templateUrl: 'dialog1.tmpl.html',
-      parent: angular.element(document.body),
-      targetEvent: ev,
-      clickOutsideToClose:true,
-      fullscreen: useFullScreen
-    })
-    .then(function(answer) {
-      $scope.status = 'You said the information was "' + answer + '".';
-    }, function() {
-      $scope.status = 'You cancelled the dialog.';
-    });
-    $scope.$watch(function() {
-      return $mdMedia('xs') || $mdMedia('sm');
-    }, function(wantsFullScreen) {
-      $scope.customFullscreen = (wantsFullScreen === true);
-    });
+        var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && $scope.customFullscreen;
+            $mdDialog.show({
+              controller: DialogController,
+              templateUrl: 'tabdialog.tmpl.html',
+              parent: angular.element(document.body),
+              targetEvent: ev,
+              clickOutsideToClose:true,
+              fullscreen: useFullScreen,
+              locals: {packageData:packageData}
+            })
+            .then(function(answer) {
+              $scope.status = 'You said the information was "' + answer + '".';
+            }, function() {
+              $scope.status = 'You cancelled the dialog.';
+            });
+            $scope.$watch(function() {
+              return $mdMedia('xs') || $mdMedia('sm');
+            }, function(wantsFullScreen) {
+              $scope.customFullscreen = (wantsFullScreen === true);
+            });
     }
 }])
 
@@ -126,4 +137,17 @@ angular.module("tracker", ['ngMaterial'])
   });
   $mdThemingProvider.theme('default')
     .primaryPalette('amazingPaletteName')
-});
+})
+
+function DialogController($scope, $mdDialog, packageData) {
+    $scope.packageData = packageData;
+  $scope.hide = function() {
+    $mdDialog.hide();
+  };
+  $scope.cancel = function() {
+    $mdDialog.cancel();
+  };
+  $scope.answer = function(answer) {
+    $mdDialog.hide(answer);
+  };
+} 
