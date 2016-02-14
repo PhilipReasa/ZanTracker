@@ -56,7 +56,7 @@ angular.module("tracker", ['ngMaterial'])
                 });
             }, 1500);   
 
-            AddPackage.addPackage($scope.user.name, $scope.tracking.carrier, $scope.tracking.id, function(data){
+            AddPackage.addPackage($scope.user.name, $scope.tracking.carrier.toLowerCase(), $scope.tracking.id, function(data){
                 console.log(data);
             });    
 
