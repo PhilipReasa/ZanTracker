@@ -1,0 +1,40 @@
+{
+  "manifest_version": 2,
+
+  "name": "zen_tracker",
+  "description": "Track your packages with piece of mind",
+  "version": "0.1",
+  
+  "icons": {
+	 "16": "images/icon_16.png",
+	 "48": "images/icon_48.png",
+	 "128": "images/icon_128.png"
+  },
+  
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "https://trackingzen-celsoendo.c9users.io/*"
+  ],
+  
+  "background": {
+    "scripts": [
+  		"core/addContextMenu.js",
+      "core/manageBrowserAction.js",
+  		"core/background.js"
+  	]
+  },
+
+  "browser_action": {
+    "default_icon": {                   
+      "19": "images/icon_19.png",           
+      "38": "images/icon_38.png"            
+    },
+    "default_title": "Zen Tracker",      
+    "default_popup": "browserAction/popup.html"        
+  },
+
+  "web_accessible_resources":[
+    "/browserAction/*"
+  ]
+}
