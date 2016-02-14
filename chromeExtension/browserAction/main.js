@@ -15,13 +15,23 @@ angular.module("tracker", ['ngMaterial'])
         });
     })
 
-    chrome.storage.local.get("trackingdata", function(value) {
+    chrome.storage.local.get("trackingLink", function(value) {
         $scope.$apply(function() {
-            $scope.tracking.id = value.trackingdata;
+            $scope.tracking.id = value.trackingLink;
 
             //clear it out after we load it
             chrome.browserAction.setBadgeText({text: ""});
-            chrome.storage.local.set({"trackingdata": ""});
+            chrome.storage.local.set({"trackingLink": ""});
+        });
+    })
+
+    chrome.storage.local.get("trackingCarrier", function(value) {
+        $scope.$apply(function() {
+            $scope.tracking.carrier = value.trackingCarrier;
+
+            //clear it out after we load it
+            chrome.browserAction.setBadgeText({text: ""});
+            chrome.storage.local.set({"trackingCarrier": ""});
         });
     })
 
