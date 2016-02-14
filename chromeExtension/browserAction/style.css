@@ -1,0 +1,55 @@
+body {
+	max-height: 208px;
+	height: 135px !important;
+	width: 300px;
+	z-index: 1;
+	background-color: #8ec1da;
+	overflow: hidden;
+}
+
+.roboto {
+	font-family: Roboto;
+	font-weight: 100;
+}
+
+#clouds {
+	width:100%;
+	background-image: URL('/browserAction/bg-clouds.png');
+	height: 190px;
+	position: absolute;
+	bottom:0;
+	z-index: -1;
+}
+
+.w80p {
+	width: 80px;
+}
+
+.left {
+	float: left;
+}
+
+.noMarginTopBottom {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.marginRight {
+	margin-right: 10px; 
+}
+
+/*progress*/
+.md-mode-indeterminate {
+	background-color: #8ec1da !important;
+}
+
+.md-bar {
+	background-color: rgb(167, 207, 227) !important;
+}
+
+/* ***************
+ * Sloppy, but solves the problem
+ * **************/
+.md-errors-spacer {
+	min-height: 0 !important; 
+}

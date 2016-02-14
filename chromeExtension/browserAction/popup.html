@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Zen Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/browserAction/vendor/angular-material.min.css">
+    <link rel="stylesheet" href="/browserAction/style.css">
+    <link href='/browserAction/vendor/roboto100.css' rel='stylesheet' type='text/css'>
+    
+    <script src="/browserAction/vendor/angular.min.js"></script>
+    <script src="/browserAction/vendor/angular-animate.min.js"></script>
+    <script src="/browserAction/vendor/angular-aria.min.js"></script>
+    <script src="/browserAction/vendor/angular-messages.min.js"></script>
+    <script src="/browserAction/vendor/angular-material.min.js"></script>
+    <script src="/browserAction/main.js"></script>
+  </head>
+  
+  
+<body ng-cloak ng-app="tracker">
+<div ng-controller="main" layout-fill layout="column">
+	<div class="h135" flex="100" layout="column" layout-align="center center">
+
+		<div ng-if='!user.name'>	
+			<form ng-submit="nameSubmit()">
+				<h3 class="roboto left marginRight">Welcome </h3>
+				<md-input-container class="left noMarginTopBottom">
+					<label>name</label>
+					<input ng-model='user.nameBeingInput' type='text'>
+				</md-input-container>
+				<h6 class="left">.</h6>
+			</form>
+		</div>
+
+		<div ng-if='user.name'>
+			<div flex="100" layout="column" layout-align="center center">
+
+				<h3 class="roboto">Nice seeing you again {{user.name}}!</h3>
+
+			</div>	
+
+			<div flex="100" layout="column" layout-align="center center">
+
+				<form ng-keydown="$event.which === 13 && addNewLink()">
+					<md-input-container class="w80p">
+						<label>Carrier</label>
+						<input ng-model='tracking.carrier' type='text'/>
+					</md-input-container>
+
+					<md-input-container>
+						<label>Tracking ID</label>
+						<input ng-model='tracking.id' type='text'/>
+					</md-input-container>			
+				</form>
+
+				<md-progress-linear ng-if='loading.show' md-mode="indeterminate"></md-progress-linear>
+
+			</div>	
+		</div>
+
+	</div>
+</div>		
+<div id="clouds"></div>
+</body>
+</html>

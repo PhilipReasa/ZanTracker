@@ -1,0 +1,1 @@
+function addNewTrackingLink(e){chrome.browserAction.setBadgeText({text:"+"}),chrome.storage.local.set({trackingdata:e})}
