@@ -4,7 +4,6 @@
     <title>Zen Tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/style.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular.js"></script>
@@ -12,27 +11,24 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
     <script src="/js/main.js"></script>
   </head>
   
   
-  <body ng-app="tracker">
-    <div class="container-fluid" ng-controller="main">
-      <div class="topAnimatedArea">
-      </div>  
-       <div class="row"  >
-         <div class="col-sm-4 col-sm-offset-4 text-center">
-           <p>Welcome to Tracker Zen ! Please choose a username.</p>
-           <div class="bgCircle">
-            <md-input-container>
-              <label>Name</label>
-              <input type="text">
-            </md-input-container>
+  <body ng-cloak ng-app="tracker">
+    <div layout-fill layout="column"  ng-controller="main">
+       <div flex="80" layout="row" layout-align="center center" class="topAnimatedArea" >
+           <div class="animate-hide" ng-hide="hideForm">
+                <div class="bgCircle" ></div>
+               <form ng-submit="setUsername()">
+                <md-input-container >
+                  <label>Name</label>
+                  <input autocomplete="off" ng-model="user.username" type="text">
+                </md-input-container>
+                </form>
            </div>
-        </div>
       </div>
-       <div id="animate-area">
+       <div flex="20" id="animate-area">
         </div> 
     </div>
     <script src="/socket.io/socket.io.js"></script>

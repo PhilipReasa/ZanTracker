@@ -10,6 +10,7 @@ var async = require('async');
 var socketio = require('socket.io');
 var express = require('express');
 var bodyParser = require('body-parser')
+var request = require('request');
 
 var mongo = require('mongodb');
 var MongoClient = mongo.MongoClient;
@@ -41,28 +42,22 @@ router.post('/user', function (req, res) {
   var userID = (req.body.id);
   var phoneNumber = (req.body.phoneNumber);
   var slackUserName = (req.body.slackUserName);
-  console.log(userID)
-  console.log(phoneNumber)
-  console.log(slackUserName)
   
-  // var existingUser = ;
   users.find({
     userID: userID
   }).count().then (
     count => {
       if (count > 0) {
         // Exists
-        var dict = {
-            phoneNumber: phoneNumber,
-            slackUserName: slackUserName
-        }
-        updateUser(userID, dict)
+        console.log('IF Exist')
+        updateUser(userID, phoneNumber, slackUserName)
       } else {
+        console.log('IF does not Exist')
         var dict = {
           userID: userID,
           phoneNumber: phoneNumber,
           slackUserName: slackUserName,
-          packages: []
+          packages: null,
         }
         addUser(dict)
       }
@@ -73,23 +68,187 @@ router.post('/user', function (req, res) {
   res.send(userID);
 });
 
+router.post('/addPackage' , function(req,res) {
+  var userID = (req.body.id);
+  var packageID = (req.body.packageID);
+  var packageCarrier = (req.body.packageCarrier);
+  
+  // Make new package object
+  var newPackage = {
+    id: packageID,
+    carrier: packageCarrier,
+  }
+    
+  users.find({
+    userID: userID
+  }).count().then (
+    count => {
+      if (count > 0) {
+        // Exists
+        res.send('Adding package to ' + userID)
+        addPackage(userID, newPackage)
+      } else {
+        res.send('User does not exist')
+      }
+    },
+    err => {console.log(err),res.send(err)}
+    
+  )
+})
+
+router.get('/getPackages' , function(req,res) {
+  var _userID = (req.query.id);
+  
+  // Get packages
+  var userModel = users.find({userID: {$eq: _userID}})
+  userModel.each(function(err,doc) {
+    if (err) alert('Error!')
+    
+    if (doc!=null) {
+      // Doc is our dict now
+      // Get current packages
+      if (doc.packages) {
+        console.log('Has existing package')
+        res.send (doc.packages)
+      } else {
+        res.send ('empty')
+      }
+      
+    }
+  })
+
+  
+  
+})
+
+router.get('/getHippoPackages', function(req,res) {
+  var _userID = (req.query.id);
+  
+  // Get packages
+  var userModel = users.find({userID: {$eq: _userID}})
+  userModel.each(function(err,doc) {
+    if (err) alert('Error!')
+    
+    if (doc!=null) {
+      var output = [];
+      // Doc is our dict now
+      // Get current packages
+      if (doc.packages) {
+        console.log('Has existing package')
+        // Call Hippo API
+        async.forEach(doc.packages, function (package, callback){ 
+          var requestURL = 'http://hackers-api.goshippo.com/v1/tracks/'+ package.carrier + '/' + package.id
+          console.log(requestURL)
+          request(requestURL , function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+              output.push(body)
+              console.log('Pushed!')
+            }
+            if (output.length == doc.packages.length) {
+              res.send(output)
+            }
+          })
+        }, function(err) {
+          res.send('Error')
+        });  
+      } else {
+        res.send ('empty')
+      }
+    }
+  })
+})
+
+router.get('/testCelso', function(req, res) {
+  var parameters = req.query.text.split(" ");
+  var command = req.query.command;
+  var response_type = 'ephemeral';
+  var response_text;
+  
+  switch(parameters[0]) {
+    case 'help': {
+      response_text = "Hi " + req.query.user_name + "!\\n" +
+                    + "Here are the available commands:\\n" +
+                    + command + " track [package number] - Retrieve your package information\\n";
+    }
+  }
+  
+  var responseData = {
+    'response_type': response_type,
+    'text': response_text
+  };
+  
+  res.setHeader('content-type', 'application/json');
+  res.end(JSON.stringify(responseData));
+});
+
+/* Functions for users */
+
 function addUser(dict) {
-  console.log('Adding')
-  console.log(dict)
   users.insert(dict) 
 }
 
-function updateUser(userID, dict) {
-  console.log('Updating' + userID)
-  console.log(dict)
-  users.update(
-        { userID: userID },
-        dict
+function updateUser(_userID, _phoneNumber, _slackUserName) {
+  console.log('USER: ' +_userID)
+  var userModel = users.find({userID: {$eq: _userID}})
+  userModel.each(function(err,doc) {
+    if (err) return
+    
+    if (doc!=null) {
+      // Doc is our dict now
+      var newPhoneNumber = doc.phoneNumber
+      var newSlackUserName = doc.slackUserName
+      if (_phoneNumber) {
+        newPhoneNumber = _phoneNumber
+      }
+      if (_slackUserName) {
+        newSlackUserName = _slackUserName
+      }
+      var dict = {
+        userID : _userID,
+        phoneNumber : newPhoneNumber,
+        slackUserName : newSlackUserName,
+        packages : userModel.packages
+      }
+      users.update(
+            { userID: _userID },
+            dict
       )
+    }
+  })
+
+  
 }
 
 
-function findUser(username) {
+/* Function to add package to a user */
+function addPackage(_userID, packageObject) {
+  var userModel = users.find({userID: {$eq: _userID}})
+  userModel.each(function(err,doc) {
+    if (err) alert('Error!')
+    
+    if (doc!=null) {
+      // Doc is our dict now
+      // Get current packages
+      var userPackages = [];
+      if (doc.packages) {
+        console.log('Has existing package')
+        userPackages = doc.packages
+      } 
+      // Add to list of user packages
+      userPackages.push(packageObject)
+      console.log(userPackages)
+        // Save to database
+      users.update(
+        { userID: doc.userID },
+        {
+          userID: doc.userID,
+          phoneNumber: doc.phoneNumber,
+          slackUserName: doc.slackUserName,
+          packages: userPackages,
+        }
+      )
+    }
+  })
 
 }
 
