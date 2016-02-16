@@ -21,7 +21,7 @@
   <body ng-cloak ng-app="tracker">
     <div layout-fill layout="column"  ng-controller="main">
        <div flex="80" layout="column" layout-align="center center" class="topAnimatedArea" >
-           <div class="animate-hide" ng-hide="hideForm">
+           <div class="" ng-hide="hideForm">
                 <div class="bgCircle" ></div>
                <form ng-submit="setUsername()">
                 <md-input-container >
@@ -31,7 +31,7 @@
                 </form>
            </div>
             <div class="animate-show" ng-show="hideForm">
-               Hello {{user.username}} !
+               <h2 class="roboto100">Hello {{user.username}}!</h2>
                 <div class="table-responsive-vertical shadow-z-1">
                   <!-- Table starts here -->
                   <table id="table" class="table table-hover table-mc-light-blue">
@@ -53,21 +53,26 @@
                       </tbody>
                     </table>
                   </div>
-                  
-                  <form>
-                   <md-input-container class="h36p">
-          					<md-select ng-model='package.carrier' placeholder="Carrier">
-          						<md-option ng-value="carrier.id" ng-repeat="carrier in carriers">{{ carrier.name }}</md-option>
-          					</md-select>
-          				</md-input-container>
-                 <md-input-container class="h36 hax">
-                  <label>Tracking Number</label>
-                  <input autocomplete="off" ng-model="package.id" type="text">
-                </md-input-container>
-                <md-button  ng-click="addPackage()" class="md-fab" aria-label="Eat cake">
-                    <i class="fa fa-plus"></i>
-                </md-button>
-                </form>
+                
+                
+                  <form  ng-submit="addPackage()">
+                    <md-button class="md-fab md-primary" aria-label="Eat cake">
+                      <i class="fa fa-plus"></i>
+                    </md-button>
+                    
+                    <md-input-container class="h36p w100p">
+                      <md-select ng-model='package.carrier' placeholder="Carrier">
+                        <md-option ng-value="carrier.id" ng-repeat="carrier in carriers">{{ carrier.name }}</md-option>
+                      </md-select>
+                    </md-input-container>
+                    <md-input-container class="h36 hax w400p">
+                      <label>Tracking Number</label>
+                      <input autocomplete="off" ng-model="package.id" type="text">
+                    </md-input-container>
+                  </form>
+                
+                
+                
             </div>
             
             

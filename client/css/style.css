@@ -74,3 +74,20 @@
 .hax {
     margin-top: 28px;
 }
+
+.w400p {
+    width: 400px;
+}
+
+.w100p {
+    width: 100px;
+}
+
+.roboto100 {
+    font-family: Roboto;
+    font-weight: 100;
+}
+
+h2.roboto100 {
+    text-align: center;
+}

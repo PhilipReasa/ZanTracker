@@ -24,16 +24,11 @@ angular.module("tracker", ['ngMaterial'])
     $scope.package.carrier = "";
     $scope.package.id = "";
     $scope.setUsername  = function () {
-        // AddUser.addUser($scope.user.username, function(data){
-        //     console.log(data);
-        // });
+        AddUser.addUser($scope.user.username, function(data){
+            console.log(data);
+        });
         GetHippoPackages.hippoPackages($scope.user.username, function(response){
-            if(response.data === "empty"){
-                console.log("empty");
-            } else {
-                for(var i = 0; i < response.data.length; i++){
-                    response.data[i] = JSON.parse(response.data[i])
-                }
+            if(!(response.data === "empty")){
                 $scope.packagesData =  response.data;
                 console.log(response);
             }
@@ -70,6 +65,9 @@ angular.module("tracker", ['ngMaterial'])
               $scope.customFullscreen = (wantsFullScreen === true);
             });
     }
+    
+    $scope.toolbar = {};
+    $scope.toolbar.isOpen = false;
 }])
 
 .service('AddUser', ['$http', function($http){

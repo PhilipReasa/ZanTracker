@@ -46,6 +46,7 @@ router.use(express.json())
 router.get('/sendMessage', function(req,res) {
   var _userID = (req.query.id);
   
+  // Get packages
   var userModel = users.find({userID: {$eq: _userID}})
   userModel.each(function(err,doc) {
     if (err) alert('Error!')
@@ -70,9 +71,7 @@ router.get('/sendMessage', function(req,res) {
 router.post('/user', function (req, res) {
   var userID = (req.body.id);
   var phoneNumber = (req.body.phoneNumber);
-  // Consider the slack username the same as the userID (for now!)
-  //var slackUserName = (req.body.slackUserName);
-  var slackUserName = userID;
+  var slackUserName = (req.body.slackUserName);
   
   users.find({
     userID: userID
@@ -172,18 +171,16 @@ router.get('/getHippoPackages', function(req,res) {
       // Get current packages
       if (doc.packages) {
         console.log('Has existing package')
-        var totalRequests = 0;
         // Call Hippo API
         async.forEach(doc.packages, function (package, callback){ 
           var requestURL = 'http://hackers-api.goshippo.com/v1/tracks/'+ package.carrier + '/' + package.id
           console.log(requestURL)
           request(requestURL , function (error, response, body) {
-            totalRequests++;
             if (!error && response.statusCode == 200) {
-              output.push(body)
-              console.log('Pushed!')
+              output.push(JSON.parse(body))
+              console.log("Pushed !")
             }
-            if (totalRequests == doc.packages.length) {
+            if (output.length == doc.packages.length) {
               res.send(output)
             }
           })
@@ -200,93 +197,19 @@ router.get('/getHippoPackages', function(req,res) {
 // Webhook for Shippo. Does not work yet
 router.post('/shippoWebhook', function(req,res) {
   console.log('Hooked!')
-
+  
   // Simulate webhook through postman?
   var packageID = (req.body.packageID);
   var packageCarrier = (req.body.packageCarrier);
   
-  // Get data from url
-  var requestURL = 'http://hackers-api.goshippo.com/v1/tracks/'+ packageCarrier + '/' + packageID
+  // Do necessary push notifications and stuff here.
   
-  var userModel = users.find({
-    packages: {
-      $elemMatch: {
-        id: packageID, 
-        carrier: packageCarrier
-      }
-    }
-  });
+  /* Twillio */
   
-  console.log('Retrieved data from usermodel!');
+  /* Slack bot */
   
-  
-  userModel.each(function(err,doc) {
-    if (err) alert('Error!');
-    
-    if (doc != null) {
-      (function(doc) {
-        var userID = doc.userID;
-        request(requestURL , function (error, response, body) {
-
-          if (!error && response.statusCode == 200) {
-            console.log('Data is loaded!')
-            // Data is in var 'body'
-            var data = JSON.parse(body);
-            console.log(data.tracking_status)
-            // var packageStatus = data.tracking_status.status
-            var packageStatusDetails = data.tracking_status.status_details
-            var packageLocationJSON = data.tracking_status.location
-            var packageLocation = 'Location unavailable'
-            if (packageLocationJSON) {
-              packageLocation = 
-                packageLocationJSON.city + ' ' + 
-                packageLocationJSON.state + ' ' + 
-                packageLocationJSON.country + ' ' + 
-                packageLocationJSON.zip
-            }
-            
-            var message = ' \n\n' + 
-              'Hi ' + toTitleCase(userID) + '!\n' + 
-              'Package update from ' + packageCarrier + '. Tracking: ' + packageID + '\n' +
-              'Status: ' + packageStatusDetails + '\n' + 
-              'Your package location is currently at: ' + packageLocation
-      
-              /* Twilio */
-              if (doc.phoneNumber) {
-                console.log('User ' + doc.userID + ' has phone number: ' + doc.phoneNumber);
-                sendMessage(doc.phoneNumber, message)
-                console.log ('Message sent to : '+ doc.phoneNumber)
-              } else {
-                console.log ('User has no phone number')
-              }
-              
-              /* Slack bot */
-              if (doc.slackUserName) {
-                console.log('Has slack username');
-                var responseData = {
-                  "channel": "@" + doc.slackUserName,
-                  "username": "zentracker",
-                  "text": message,
-                  "icon_emoji": ":package:"
-                };
-                
-                request.post({
-                  url:     'https://hooks.slack.com/services/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',
-                  body:    JSON.stringify(responseData)
-                });
-              } else {
-                console.log('User has no slack username')
-              }
-              
-              
-              
-              /* Web app / socket.io */
-              res.send('Success') 
-          }
-        })
-      })(doc);
-    }
-  })
+  /* Web app / socket.io */
+  res.send('Success')
 })
 
 router.get('/slackCommand', function(req, res) {
@@ -354,7 +277,6 @@ router.get('/slackCommand', function(req, res) {
               userID: username,
               slackUserName: username,
               packages: null,
-              phoneNumber: parameters[1] || ''
             }
             addUser(dict)
             
@@ -527,19 +449,8 @@ router.get('/slackCommand', function(req, res) {
                       console.log(requestURL)
                       request(requestURL , function (error, response, body) {
                         if (!error && response.statusCode == 200) {
-                          var trackingStatus = JSON.parse(body);
-                          
-                          responseData.text = "Hey! I found your package! :package:\n";
-                          responseData.text = responseData.text + "The carrier is " + trackingStatus.carrier + "!\n";
-                          responseData.text = responseData.text + "The last updated information is from " + trackingStatus.tracking_status.object_updated + "\n";
-                          responseData.text = responseData.text + "The last status that I have here is: " + trackingStatus.tracking_status.status + " - " + trackingStatus.tracking_status.status_details + "\n";
-                          responseData.text = responseData.text + "The last location is: " + trackingStatus.tracking_status.location.city + ", "+ trackingStatus.tracking_status.location.state + ", " + trackingStatus.tracking_status.location.country + "\n";
-                          
-                          request.post({
-                            headers: {'content-type' : 'application/json'},
-                            url:     url_return,
-                            body:    JSON.stringify(responseData)
-                          });
+                          var trackingStatus = body[0];
+                          console.log(trackingStatus.tracking_status.status);
                         }
                       })
                     }
@@ -576,7 +487,7 @@ router.get('/slackCommand', function(req, res) {
     default: {
       responseData.text = "Hi " + username + "! Grab a :coffee: and relax! Your package is coming! :sunglasses:\n";
       responseData.text = responseData.text + "Here are the available commands:\n" 
-      responseData.text = responseData.text + command + " login [phone number] - To identify yourself with your slack username. Phone number is optional!\n";
+      responseData.text = responseData.text + command + " login - To identify yourself with your slack username.\n";
       responseData.text = responseData.text + command + " add [carrier] [tracking number] - To start tracking a package.\n";
       responseData.text = responseData.text + command + " get [tracking number] - Get tracking of a specific package.\n";
       responseData.text = responseData.text + command + " list - List all your packages.\n";
@@ -679,11 +590,6 @@ function sendMessage(phoneNumber, messageContent) {
         
       }
   });  
-}
-
-/* Helper functions */
-function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
 
